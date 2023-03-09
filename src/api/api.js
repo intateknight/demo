@@ -1,56 +1,43 @@
-<<<<<<< HEAD
 import service from '@/api/request.js';
 
+//监控相关
 export function getVideo(data) {
-  return service.get('stream/play/demo/index.m3u8', data)
+  return service.get('http://49.232.216.15:5009/supervision/hls/play/ce185w78uyv4/index.m3u8', data)
 }
 
-export function getDeviceList(data) {
-  return service.get('/device/map', data)
+export function getDeviceList(url, params) {
+  return service.get(url, params)
 }
 
-export function deviceAdd(params) {
-  return service.post('/device/add', params)
+export function deviceAdd(url, params) {
+  return service.post(url, params)
 }
 
-export function deviceDel(params) {
-  return service.post('/device/del', params)
+export function deviceDel(url, params) {
+  return service.post(url, params)
 }
 
+// 数据库相关
 export function query(params) {
   return service.post('https://1to2to3.cn/rds2/service/query', params)
 }
 
-=======
-import service from '@/api/request.js';
-
-export function getVideo(data) {
-  return service.get('stream/play/demo/index.m3u8', data)
+export function create(params) {
+  return service.post('https://1to2to3.cn/rds2/service/create', params)
 }
 
-export function getDeviceList(data) {
-  return service.get('/device/map', data)
-}
 
-export function deviceAdd(params) {
-  return service.post('/device/add', params)
-}
-
-export function deviceDel(params) {
-  return service.post('/device/del', params)
-}
-
-export function query(params) {
-  return service.post('https://1to2to3.cn/rds2/service/query', params)
-}
-
-export function login(params) {
-  return service.post('https://1to2to3.cn/super-login/oauth/token', params)
+// 用户中心相关
+export function login(url, params) {
+  return service.post(url, params)
 }
 
 export function register(params) {
   return service.post('https://1to2to3.cn/super-login/user/register', params)
 }
 
+export function userinfo(params) {
+  return service.post('https://1to2to3.cn/super-login/sys/me', params)
+}
 
->>>>>>> e90c7b4 (暂存)
+

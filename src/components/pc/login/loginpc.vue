@@ -18,8 +18,8 @@
       <form>
         <h2 class="title">Sign in to Website</h2>
         <span class="text">or use email for registration</span>
-        <input class="form__input" type="text" placeholder="Email" v-model='loginForm.email'/>
-        <input class="form__input" type="password" placeholder="Password" v-model='loginForm.password'/>
+        <input class="form__input" type="text" placeholder="账户" v-model='loginForm.username'/>
+        <input class="form__input" type="password" placeholder="密码" v-model='loginForm.password'/>
         <div class="primary-btn" @click="login()">立即登录</div>
       </form>
     </div>
@@ -58,7 +58,7 @@
 
 <script>
 import wxlogin from 'vue-wxlogin'
-import { login,register } from '@/api/api'   
+import { login,register, } from '@/api/api'   
 export default {
   name: 'LoginBox',
   components: { wxlogin },
@@ -66,8 +66,8 @@ export default {
     return {
       isLogin: false,
       loginForm: {
-        email: '',
-        password: '',
+        username: 'caozhoujun001',
+        password: '123456',
       },
       registerForm: {
         name: '',
@@ -78,10 +78,41 @@ export default {
     }
   },
   methods: {
+    
     login() {
-      window.localStorage.setItem('token','1')
-      this.$router.push('/indexpc')
+      if(this.loginForm.username == '' || this.loginForm.password == ''){
+        this.$message({
+          showClose: true,
+          message: '数据不能为空',
+          type: 'error',
+          center: true
+        });
+      }else{
+        var url =`https://1to2to3.cn/super-login/oauth/token?grant_type=password&username=${this.loginForm.username}&password=${this.loginForm.password}&client_id=1001&client_secret=123456`
+        login(url).then((res)=>{
+          if(res.code == 400){
+            this.$message({
+            showClose: true,
+            message: res.message,
+            type: 'error',
+            center: true});
+          }else{
+            this.$message({
+            showClose: true,
+            message: '登入成功',
+            type: 'success',
+            center: true});
+            window.localStorage.setItem('token',res.access_token)
+            setTimeout(() => {
+              this.$router.push('/indexpc')
+            }, 2000);
+          }
+        })
+      }
+
+      // this.$router.push('/indexpc')
     },
+
     register() {
       console.log('注册');
       if(this.registerForm.name == '' || this.registerForm.username == '' || this.registerForm.password == '' || this.registerForm.confirm == ''){

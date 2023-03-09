@@ -3,11 +3,7 @@
     <!-- logo -->
     <div class="logo" @click="push('/indexpc')">
       <img src="@/assets/pc/img/Frame.png" alt="" class="logopic">
-<<<<<<< HEAD
-      <div class="title">夸克巡店PC</div>
-=======
       <div class="title">夸克微督导</div>
->>>>>>> e90c7b4 (暂存)
     </div>
     <!-- 左侧菜单 -->
     <el-menu

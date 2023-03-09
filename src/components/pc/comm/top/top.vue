@@ -3,17 +3,71 @@
     <div class="top-right">
       <img src="@/assets/pc/img/Frame 874.png" alt="" class="top-right-img">
       <div class="top-right-text">
-        <p class="top-right-name">姓名文本</p>
-        <p class="top-right-job">检查员&负责人</p>
+        <p class="top-right-name">{{ name }}</p>
+        <p class="top-right-job">{{ job }}</p>
       </div>
-      <i class="el-icon-arrow-down"></i>
+      <i class="el-icon-arrow-down" @click="open"></i>
     </div>
   </div>
 </template>
 
 <script>
+import {userinfo,query} from '@/api/api.js'
 export default {
-  name:'top'
+  name:'top',
+  data() {
+    return {
+      name:'',
+      job:'',
+    }
+  },
+  mounted() {
+    userinfo().then((res)=>{
+      this.name = res.userAuthentication.principal.user.name
+      var term ={
+          auth: 2,
+          project: "微督导",
+          table: "biz_store_user_info",
+          conditions: {
+              pagination: {
+                  page: 1,
+                  pageSize: 5
+              },
+              fields: ['role'],
+              query: {
+                  and: [
+                    {match:{'realname':this.name} }
+                  ]
+              }
+          }
+      }
+      query(term).then((res)=>{
+        this.job = res.data[0].role
+      })
+    })
+  },
+  methods: {
+      open() {
+        this.$confirm('是否退出登入?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '退出成功!'
+          });
+          localStorage.removeItem('token')
+          location.reload()
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          });          
+        });
+      }
+    }
+
 }
 </script>
 

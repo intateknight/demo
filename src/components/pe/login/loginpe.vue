@@ -26,7 +26,7 @@
         <div v-if="flag == 2">
           <div class="container">
             <form>
-              <input class="form__input" type="text" placeholder="Account" v-model='loginForm.name'/>
+              <input class="form__input" type="text" placeholder="Account" v-model='loginForm.username'/>
               <input class="form__input" type="password" placeholder="Password" v-model='loginForm.password'/>
             </form>
           </div>
@@ -39,9 +39,10 @@
         <div v-if="flag == 3">
           <div class="container">
             <form>
-              <input class="form__input" type="text" placeholder="Account" v-model="registerForm.name"/>
-              <input class="form__input" type="password" placeholder="Password" v-model='registerForm.password'/>
-              <input class="form__input" type="password" placeholder="Confirm Password" v-model='registerForm.confirm'/>
+              <input class="form__input" type="text" placeholder="姓名" v-model='registerForm.name'/>
+              <input class="form__input" type="text" placeholder="账户" v-model="registerForm.username"/>
+              <input class="form__input" type="password" placeholder="密码" v-model='registerForm.password'/>
+              <input class="form__input" type="password" placeholder="确认密码" v-model='registerForm.confirm'/>
             </form>
           </div>
           <div style="display: flex;justify-content: space-between;width: 70%;margin-left: 16%;">
@@ -67,17 +68,19 @@
 <script>
 import wxlogin from 'vue-wxlogin'
 import { Toast } from 'vant';
+import { login,register, } from '@/api/api'
 export default {
   components: { wxlogin },
   data() {
     return {
       flag:1,
       loginForm: {
-        email: '',
-        password: '',
+        username: 'caozhoujun001',
+        password: '123456',
       },
       registerForm: {
         name: '',
+        username:'',
         password: '',
         confirm:'',
       },
@@ -94,8 +97,22 @@ export default {
       this.flag = x
     },
     login() {
-      window.localStorage.setItem('token','1')
-      this.$router.push('/indexpe')
+      if(this.loginForm.username == '' || this.loginForm.password == ''){
+        Toast.fail('不能为空');
+      }else{
+        var url =`https://1to2to3.cn/super-login/oauth/token?grant_type=password&username=${this.loginForm.username}&password=${this.loginForm.password}&client_id=1001&client_secret=123456`
+        login(url).then((res)=>{
+          if(res.code == 400){
+            Toast.fail(res.message);
+          }else{
+            Toast.success('登入成功');
+            window.localStorage.setItem('token',res.access_token)
+            setTimeout(() => {
+              this.$router.push('/indexpe')
+            }, 2000);
+          }
+        })
+      }
     },
     register() {
       console.log('注册');
@@ -104,7 +121,25 @@ export default {
       }else if(this.registerForm.password !== this.registerForm.confirm){
         Toast.fail('两次密码不同');
       }else{
-        Toast.success('注册成功');
+        var obj ={
+          name:this.registerForm.name,
+          username:this.registerForm.username,
+          password:this.registerForm.password,
+        }
+        register(obj).then((res)=>{
+          if(res.code == 1401){
+            Toast.fail(res.message); 
+          }else{
+            Toast.success(res.message);
+            setTimeout(() => {
+              this.flag = 2
+              this.registerForm.name = ''
+              this.registerForm.username = ''
+              this.registerForm.password = ''
+              this.registerForm.confirm = ''
+            }, 2000);
+          }
+        })
       }
     },
   },
